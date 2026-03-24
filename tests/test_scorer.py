@@ -1,19 +1,13 @@
-from app.services.scorer import cross_score, compute_score
+# tests/test_scorer.py
+from unittest.mock import patch
+from app.services.score_service import compute_submission_score
 
-def test_cross_score():
-    sentences = ["Built ML model"]
-    job_desc = "Machine learning experience"
+def test_scoring_with_ai():
+    submission = {"resume_text": "Python, ML, AWS", "job_id": "job1"}
+    job_keywords = ["Python", "ML", "AWS", "Docker"]
+    company_name = "TechCorp"
 
-    scored = cross_score(sentences, job_desc)
-    scored = [(sentence, float(score)) for sentence, score in scored]
-
-    assert len(scored) == 1
-    assert isinstance(scored[0][1], float)
-
-
-def test_compute_score():
-    scored = [("test", 0.8), ("test2", 0.6)]
-    score = compute_score(scored)
-    score = float(score)
-    assert score > 0
-    assert score <= 100
+    with patch("app.services.ai_feedback.generate_ai_feedback", return_value="Mock AI feedback"):
+        score = compute_submission_score(submission, job_keywords, company_name)
+        assert isinstance(score, dict)
+        assert "ai_feedback" in score

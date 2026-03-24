@@ -1,10 +1,27 @@
 from fastapi import FastAPI
-from app.routes import analyze, parse, rank, score, feedback
+from fastapi.middleware.cors import CORSMiddleware
+from app.routes import auth, profile, jobs, submissions, scores, notifications
 
-app = FastAPI(title="AI Hiring System")
+app = FastAPI(title="AI Skill Gap Finder API")
 
-app.include_router(analyze.router, prefix="/api/v1")
-app.include_router(parse.router, prefix="/api/v1")
-app.include_router(rank.router, prefix="/api/v1")
-app.include_router(score.router, prefix="/api/v1")
-app.include_router(feedback.router, prefix="/api/v1")
+# CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # restrict to frontend URL in prod
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# Include all routers
+app.include_router(auth.router)
+app.include_router(profile.router)
+app.include_router(jobs.router)
+app.include_router(submissions.router)
+app.include_router(scores.router)
+app.include_router(notifications.router)
+
+@app.get("/")
+def root():
+    return {"message": "AI Skill Gap Finder API is running"}
+
